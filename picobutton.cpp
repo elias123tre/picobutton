@@ -70,6 +70,58 @@ char message[] = {
     0x00,
 };
 
+#pragma pack(push, 1)
+typedef struct
+{
+    /* frame */
+    uint16_t size;
+    uint16_t protocol : 12;
+    uint8_t addressable : 1;
+    uint8_t tagged : 1;
+    uint8_t origin : 2;
+    uint32_t source;
+    /* frame address */
+    uint8_t target[8];
+    uint8_t reserved[6];
+    uint8_t res_required : 1;
+    uint8_t ack_required : 1;
+    uint8_t : 6;
+    uint8_t sequence;
+    /* protocol header */
+    uint64_t : 64;
+    uint16_t type;
+    uint16_t : 16;
+    /* variable length payload follows */
+} lx_protocol_header_t;
+#pragma pack(pop)
+
+// message using protocol header type
+lx_protocol_header_t header = {
+    .size = 0x2a00,
+    .protocol = 0x0030,
+    .addressable = 0b1,
+    .tagged = 0b0,
+    .origin = 0b00,
+    .source = 0x843cf0,
+    .target = {0x84, 0xf0, 0x3c, 0x84, 0x00, 0x00, 0x00, 0x00},
+    .reserved = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+    .res_required = 0x00,
+    .ack_required = 0x00,
+    .sequence = 0x01,
+    .type = 0x0d00,
+};
+
+const char payload[] = {
+    0x00,
+    0x00,
+    0xff,
+    0xff,
+    0xe8,
+    0x03,
+    0x00,
+    0x00,
+};
+
 void run_udp_beacon()
 {
     struct udp_pcb *pcb = udp_new();
@@ -80,9 +132,12 @@ void run_udp_beacon()
     int counter = 0;
     while (true)
     {
-        struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, sizeof(message) + 1, PBUF_RAM);
+        struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, sizeof(header) + sizeof(payload) + 1, PBUF_RAM);
         char *req = (char *)p->payload;
-        memmove(req, message, sizeof(message));
+
+        memcpy(req, &header, sizeof(header));
+        memcpy(req + sizeof(header), payload, sizeof(payload));
+
         err_t er = udp_sendto(pcb, p, &addr, UDP_PORT);
         pbuf_free(p);
         if (er != ERR_OK)

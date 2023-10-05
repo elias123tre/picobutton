@@ -1,7 +1,24 @@
 {
-    "cmake.environment": {
-        "PICO_SDK_PATH": "/home/user/pico-sdk",
-        "PICO_EXTRAS_PATH": "/home/user/pico-extras",
-        "PICO_BOARD": "pico_w"
+  "cmake.environment": {
+    "PICO_SDK_PATH": "/home/user/pico/pico-sdk",
+    "PICO_EXTRAS_PATH": "/home/user/pico/pico-extras",
+    "PICO_EXAMPLES_PATH": "/home/user/pico/pico-examples",
+    "PICO_PLAYGROUND_PATH": "/home/user/pico/pico-playground",
+    "PICO_BOARD": "pico_w",
+    "WIFI_SSID": "Wifi ssid",
+    "WIFI_PASSWORD": "Wifi password"
+  },
+  "cmake.statusbar.advanced": {
+    "debug": {
+      "visibility": "hidden"
+    },
+    "launch": {
+      "visibility": "hidden"
+    },
+    "buildTarget": {
+      "visibility": "hidden"
     }
+  },
+  "cmake.buildBeforeRun": true,
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
